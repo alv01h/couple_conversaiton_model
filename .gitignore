@@ -1,0 +1,21 @@
+# Python 虛擬環境
+.venv/
+venv/
+env/
+
+# Python 快取與編譯檔
+__pycache__/
+*.py[cod]
+
+# 大模型權重 (模型權重檔案較大，不建議版控)
+models/
+
+# 原始外部下載資料集
+data/persona-conflicts-corpus-emnlp-2025/
+
+# 系統垃圾檔案
+.DS_Store
+.DS_Store?
+
+# 訓練 Log 檔案
+*.log

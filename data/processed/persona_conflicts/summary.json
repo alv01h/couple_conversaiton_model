@@ -1,0 +1,212 @@
+{
+  "source": "data/persona-conflicts-corpus-emnlp-2025/mturk_aggregate.csv",
+  "relationship_subtype_filter": null,
+  "history_turns": 4,
+  "seed": 42,
+  "variants": {
+    "no_speakers": {
+      "all": {
+        "turn_examples": 3470,
+        "dialogues": 240,
+        "risk_class_counts": {
+          "low": 1823,
+          "medium": 896,
+          "high": 751
+        },
+        "relationship_counts": {
+          "siblings": 556,
+          "friend": 1054,
+          "parent-child": 442,
+          "extended-family": 172,
+          "couple": 1186,
+          "grandparent-grandchild": 60
+        },
+        "conflict_dialogue_counts": {
+          "True": 1744,
+          "False": 1726
+        },
+        "backstory_condition_counts": {
+          "negative": 1735,
+          "positive": 1735
+        }
+      },
+      "splits": {
+        "train": {
+          "turn_examples": 2658,
+          "dialogues": 184,
+          "risk_class_counts": {
+            "low": 1408,
+            "medium": 680,
+            "high": 570
+          },
+          "relationship_counts": {
+            "siblings": 444,
+            "friend": 820,
+            "parent-child": 328,
+            "extended-family": 59,
+            "couple": 947,
+            "grandparent-grandchild": 60
+          },
+          "conflict_dialogue_counts": {
+            "True": 1338,
+            "False": 1320
+          },
+          "backstory_condition_counts": {
+            "negative": 1333,
+            "positive": 1325
+          }
+        },
+        "val": {
+          "turn_examples": 408,
+          "dialogues": 28,
+          "risk_class_counts": {
+            "low": 216,
+            "high": 88,
+            "medium": 104
+          },
+          "relationship_counts": {
+            "friend": 114,
+            "couple": 120,
+            "siblings": 57,
+            "extended-family": 59,
+            "parent-child": 58
+          },
+          "conflict_dialogue_counts": {
+            "True": 202,
+            "False": 206
+          },
+          "backstory_condition_counts": {
+            "negative": 201,
+            "positive": 207
+          }
+        },
+        "test": {
+          "turn_examples": 404,
+          "dialogues": 28,
+          "risk_class_counts": {
+            "low": 199,
+            "medium": 112,
+            "high": 93
+          },
+          "relationship_counts": {
+            "friend": 120,
+            "couple": 119,
+            "extended-family": 54,
+            "siblings": 55,
+            "parent-child": 56
+          },
+          "conflict_dialogue_counts": {
+            "False": 200,
+            "True": 204
+          },
+          "backstory_condition_counts": {
+            "negative": 201,
+            "positive": 203
+          }
+        }
+      }
+    },
+    "role_speakers": {
+      "all": {
+        "turn_examples": 3470,
+        "dialogues": 240,
+        "risk_class_counts": {
+          "low": 1823,
+          "medium": 896,
+          "high": 751
+        },
+        "relationship_counts": {
+          "siblings": 556,
+          "friend": 1054,
+          "parent-child": 442,
+          "extended-family": 172,
+          "couple": 1186,
+          "grandparent-grandchild": 60
+        },
+        "conflict_dialogue_counts": {
+          "True": 1744,
+          "False": 1726
+        },
+        "backstory_condition_counts": {
+          "negative": 1735,
+          "positive": 1735
+        }
+      },
+      "splits": {
+        "train": {
+          "turn_examples": 2658,
+          "dialogues": 184,
+          "risk_class_counts": {
+            "low": 1408,
+            "medium": 680,
+            "high": 570
+          },
+          "relationship_counts": {
+            "siblings": 444,
+            "friend": 820,
+            "parent-child": 328,
+            "extended-family": 59,
+            "couple": 947,
+            "grandparent-grandchild": 60
+          },
+          "conflict_dialogue_counts": {
+            "True": 1338,
+            "False": 1320
+          },
+          "backstory_condition_counts": {
+            "negative": 1333,
+            "positive": 1325
+          }
+        },
+        "val": {
+          "turn_examples": 408,
+          "dialogues": 28,
+          "risk_class_counts": {
+            "low": 216,
+            "high": 88,
+            "medium": 104
+          },
+          "relationship_counts": {
+            "friend": 114,
+            "couple": 120,
+            "siblings": 57,
+            "extended-family": 59,
+            "parent-child": 58
+          },
+          "conflict_dialogue_counts": {
+            "True": 202,
+            "False": 206
+          },
+          "backstory_condition_counts": {
+            "negative": 201,
+            "positive": 207
+          }
+        },
+        "test": {
+          "turn_examples": 404,
+          "dialogues": 28,
+          "risk_class_counts": {
+            "low": 199,
+            "medium": 112,
+            "high": 93
+          },
+          "relationship_counts": {
+            "friend": 120,
+            "couple": 119,
+            "extended-family": 54,
+            "siblings": 55,
+            "parent-child": 56
+          },
+          "conflict_dialogue_counts": {
+            "False": 200,
+            "True": 204
+          },
+          "backstory_condition_counts": {
+            "negative": 201,
+            "positive": 203
+          }
+        }
+      }
+    }
+  }
+}

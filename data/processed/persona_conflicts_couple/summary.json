@@ -1,0 +1,176 @@
+{
+  "source": "data/persona-conflicts-corpus-emnlp-2025/mturk_aggregate.csv",
+  "relationship_subtype_filter": "couple",
+  "history_turns": 4,
+  "seed": 42,
+  "variants": {
+    "no_speakers": {
+      "all": {
+        "turn_examples": 1186,
+        "dialogues": 80,
+        "risk_class_counts": {
+          "low": 617,
+          "medium": 311,
+          "high": 258
+        },
+        "relationship_counts": {
+          "couple": 1186
+        },
+        "conflict_dialogue_counts": {
+          "True": 596,
+          "False": 590
+        },
+        "backstory_condition_counts": {
+          "negative": 593,
+          "positive": 593
+        }
+      },
+      "splits": {
+        "train": {
+          "turn_examples": 949,
+          "dialogues": 64,
+          "risk_class_counts": {
+            "low": 490,
+            "medium": 254,
+            "high": 205
+          },
+          "relationship_counts": {
+            "couple": 949
+          },
+          "conflict_dialogue_counts": {
+            "True": 477,
+            "False": 472
+          },
+          "backstory_condition_counts": {
+            "negative": 474,
+            "positive": 475
+          }
+        },
+        "val": {
+          "turn_examples": 117,
+          "dialogues": 8,
+          "risk_class_counts": {
+            "medium": 31,
+            "high": 27,
+            "low": 59
+          },
+          "relationship_counts": {
+            "couple": 117
+          },
+          "conflict_dialogue_counts": {
+            "True": 59,
+            "False": 58
+          },
+          "backstory_condition_counts": {
+            "negative": 59,
+            "positive": 58
+          }
+        },
+        "test": {
+          "turn_examples": 120,
+          "dialogues": 8,
+          "risk_class_counts": {
+            "low": 68,
+            "medium": 26,
+            "high": 26
+          },
+          "relationship_counts": {
+            "couple": 120
+          },
+          "conflict_dialogue_counts": {
+            "True": 60,
+            "False": 60
+          },
+          "backstory_condition_counts": {
+            "negative": 60,
+            "positive": 60
+          }
+        }
+      }
+    },
+    "role_speakers": {
+      "all": {
+        "turn_examples": 1186,
+        "dialogues": 80,
+        "risk_class_counts": {
+          "low": 617,
+          "medium": 311,
+          "high": 258
+        },
+        "relationship_counts": {
+          "couple": 1186
+        },
+        "conflict_dialogue_counts": {
+          "True": 596,
+          "False": 590
+        },
+        "backstory_condition_counts": {
+          "negative": 593,
+          "positive": 593
+        }
+      },
+      "splits": {
+        "train": {
+          "turn_examples": 949,
+          "dialogues": 64,
+          "risk_class_counts": {
+            "low": 490,
+            "medium": 254,
+            "high": 205
+          },
+          "relationship_counts": {
+            "couple": 949
+          },
+          "conflict_dialogue_counts": {
+            "True": 477,
+            "False": 472
+          },
+          "backstory_condition_counts": {
+            "negative": 474,
+            "positive": 475
+          }
+        },
+        "val": {
+          "turn_examples": 117,
+          "dialogues": 8,
+          "risk_class_counts": {
+            "medium": 31,
+            "high": 27,
+            "low": 59
+          },
+          "relationship_counts": {
+            "couple": 117
+          },
+          "conflict_dialogue_counts": {
+            "True": 59,
+            "False": 58
+          },
+          "backstory_condition_counts": {
+            "negative": 59,
+            "positive": 58
+          }
+        },
+        "test": {
+          "turn_examples": 120,
+          "dialogues": 8,
+          "risk_class_counts": {
+            "low": 68,
+            "medium": 26,
+            "high": 26
+          },
+          "relationship_counts": {
+            "couple": 120
+          },
+          "conflict_dialogue_counts": {
+            "True": 60,
+            "False": 60
+          },
+          "backstory_condition_counts": {
+            "negative": 60,
+            "positive": 60
+          }
+        }
+      }
+    }
+  }
+}
