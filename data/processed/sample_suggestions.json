@@ -1,0 +1,64 @@
+[
+  {
+    "id": "sample_01",
+    "type": "無衝突 / 正向對話 (Non-conflict)",
+    "relationship": "couple",
+    "scenario": "Mia comes home exhausted after work while Oliver relaxes on the couch.",
+    "history": [
+      "Hey love. How was your day?"
+    ],
+    "current_message": "Same old, Ollie. I got you your favorite dessert on the way home!",
+    "predicted_risk_score_0_1": 0.0133,
+    "predicted_risk_score_1_4": 1.04,
+    "risk_level": "low",
+    "requires_repair": false,
+    "llm_repair_analysis": "【示範模式】此處將由 Ollama (qwen2.5:0.5b) 分析此處隱含的情緒與需求。",
+    "llm_repair_suggestions": {
+      "empathic": "【示範同理說法】當你說「Same old, Ollie. I got you your favorite dessert on the way home!」時，我感受到些許壓力，我們可以聊聊嗎？",
+      "softened": "【示範軟化說法】我今天有點累，希望能被理解，而不是指責。",
+      "solution_oriented": "【示範解決方案】我們一起找時間討論如何分配，好嗎？"
+    }
+  },
+  {
+    "id": "sample_02",
+    "type": "中度衝突 / 抱怨抱怨 (Medium Risk)",
+    "relationship": "couple",
+    "scenario": "Mia and Oliver discussing household chores and spending weekend time.",
+    "history": [
+      "Hey, did you remember to take out the trash?",
+      "I've been busy with work all day, I'll do it later."
+    ],
+    "current_message": "You always say 'later' and then I end up having to do it myself every single time.",
+    "predicted_risk_score_0_1": 0.3645,
+    "predicted_risk_score_1_4": 2.09,
+    "risk_level": "medium",
+    "requires_repair": true,
+    "llm_repair_analysis": "【示範模式】此處將由 Ollama (qwen2.5:0.5b) 分析此處隱含的情緒與需求。",
+    "llm_repair_suggestions": {
+      "empathic": "【示範同理說法】當你說「You always say 'later' and then I end up having to do it myself every single time.」時，我感受到些許壓力，我們可以聊聊嗎？",
+      "softened": "【示範軟化說法】我今天有點累，希望能被理解，而不是指責。",
+      "solution_oriented": "【示範解決方案】我們一起找時間討論如何分配，好嗎？"
+    }
+  },
+  {
+    "id": "sample_03",
+    "type": "高風險衝突 / 激烈人格攻擊 (High Risk)",
+    "relationship": "couple",
+    "scenario": "A heated argument after Oliver forgot their anniversary dinner reservation.",
+    "history": [
+      "I waited at the restaurant for 45 minutes alone.",
+      "I told you my team meeting ran late, it's not a big deal."
+    ],
+    "current_message": "You're completely selfish and never care about my feelings! I am sick of your excuses!",
+    "predicted_risk_score_0_1": 0.4009,
+    "predicted_risk_score_1_4": 2.2,
+    "risk_level": "medium",
+    "requires_repair": true,
+    "llm_repair_analysis": "【示範模式】此處將由 Ollama (qwen2.5:0.5b) 分析此處隱含的情緒與需求。",
+    "llm_repair_suggestions": {
+      "empathic": "【示範同理說法】當你說「You're completely selfish and never care about my feelings! I am sick of your excuses!」時，我感受到些許壓力，我們可以聊聊嗎？",
+      "softened": "【示範軟化說法】我今天有點累，希望能被理解，而不是指責。",
+      "solution_oriented": "【示範解決方案】我們一起找時間討論如何分配，好嗎？"
+    }
+  }
+]
