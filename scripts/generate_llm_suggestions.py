@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""讀取 sample_predictions.json 並使用 Ollama (Qwen) 產生衝突分析與非暴力修復建議改寫。"""
+"""讀取 sample_predictions.json 並使用 Ollama (Qwen) 產生獨特且專屬的對話修復改寫建議。"""
 
 from __future__ import annotations
 
 import argparse
 import json
 import sys
+import urllib.request
+import urllib.error
 from pathlib import Path
 from typing import Dict, List, Any
 
@@ -14,60 +16,69 @@ try:
 except ImportError:
     ollama = None
 
-import urllib.request
-import urllib.error
+
+def check_ollama_server() -> str | None:
+    """檢查 Ollama 服務是否正在背景運行，回傳可用的 host URL"""
+    hosts = ["http://127.0.0.1:11434", "http://localhost:11434"]
+    for host in hosts:
+        try:
+            req = urllib.request.urlopen(f"{host}/api/tags", timeout=3)
+            if req.status == 200:
+                return host
+        except Exception:
+            pass
+    return None
 
 
-def check_ollama_server(host: str = "http://localhost:11434") -> bool:
-    """檢查 Ollama 服務是否正在背景運行"""
-    try:
-        req = urllib.request.urlopen(f"{host}/api/tags", timeout=3)
-        return req.status == 200
-    except Exception:
-        return False
+def build_system_prompt() -> str:
+    return (
+        "You are an expert relationship communication and Nonviolent Communication (NVC) coach.\n"
+        "Your task is to analyze conflict messages and provide tailored, empathetic, repair-oriented rewrites in English.\n"
+        "Output pure valid JSON strictly without markdown formatting or introductory text."
+    )
 
 
-def build_llm_prompt(item: Dict[str, Any]) -> str:
-    """構建傳給 LLM 的最佳提示詞 (Prompt)"""
-    history_str = "\n".join(item.get("history", [])) if item.get("history") else "(無)"
+def build_user_prompt(item: Dict[str, Any]) -> str:
+    history_str = "\n".join(item.get("history", [])) if item.get("history") else "(None)"
     
-    prompt = f"""你是一位專業的人際關係與非暴力溝通 (NVC) 相處教練。
-請分析以下對話中的衝突訊息，並給出分析與修復建議。
+    prompt = f"""You are an NVC relationship coach. Write ACTUAL FIRST-PERSON SPOKEN REWRITE QUOTES (e.g. "I feel...", "Can we...") to replace the aggressive message.
+IMPORTANT: Do NOT write meta-descriptions like "The author is expressing...". Write the EXACT SPOKEN DIALOGUE QUOTES!
 
-【對話背景】
-- 關係類型：{item.get('relationship', 'couple')}
-- 前因後果情境：{item.get('scenario', '')}
-- 歷史對話紀錄：
-{history_str}
-
-【當前發送的訊息】
-「{item.get('current_message', '')}」
-
-【AI 模型風險預測】
-- 風險分數 (1-4分)：{item.get('predicted_risk_score_1_4', 0.0)} 分
-- 風險等級：{item.get('risk_level', 'low').upper()}
-
----
-請以【繁體中文】輸出繁體 JSON 格式（只輸出純 JSON，不要包含 Markdown 註解或無關文字），欄位包含：
-1. "analysis": 簡短分析這句話背後隱含的情緒與未被滿足的需求 (約 1-2 句話)。
-2. "suggestions": 包含 3 種不同語氣的「溫和改寫建議 (Repair Suggestions)」，幫助溝通順利：
-   - "empathic": 展現同理心與表達需求的說法
-   - "softened": 軟化語氣、直白表達感覺的說法
-   - "solution_oriented": 著重於提出共同解決方案的說法
-
-JSON 範例格式：
+### EXAMPLE INPUT:
+Original Message: "You never help with anything around the house!"
+### EXAMPLE OUTPUT JSON:
 {{
-  "analysis": "...",
+  "analysis": "The speaker feels overwhelmed with chores and needs shared support.",
   "suggestions": {{
-    "empathic": "...",
-    "softened": "...",
-    "solution_oriented": "..."
+    "empathic": "I'm feeling really overwhelmed with household chores right now and could really use your help.",
+    "softened": "I get frustrated when I have to clean up alone. Can we talk about sharing these tasks?",
+    "solution_oriented": "Let's list the daily chores together and split them so we both have time to relax."
   }}
 }}
-"""
+
+---
+
+### YOUR TARGET TASK:
+[Scenario Context] {item.get('scenario', '')}
+[Dialogue History]
+{history_str}
+
+[Original Current Message] "{item.get('current_message', '')}"
+
+Now write actual first-person spoken dialogue quotes for the target message above in JSON:
+{{
+  "analysis": "Short 1-2 sentence emotion & need analysis in English",
+  "suggestions": {{
+    "empathic": "<Write actual spoken first-person English quote>",
+    "softened": "<Write actual spoken first-person English quote>",
+    "solution_oriented": "<Write actual spoken first-person English quote>"
+  }}
+}}"""
     return prompt.strip()
+
+
 def parse_json_from_llm(response_text: str) -> Dict[str, Any]:
-    """嘗試從 LLM 輸出文字中解析出 JSON 物件"""
+    """從 LLM 輸出文字中精確提取並解析 JSON 物件"""
     text = response_text.strip()
     if text.startswith("```json"):
         text = text[7:]
@@ -91,7 +102,7 @@ def parse_json_from_llm(response_text: str) -> Dict[str, Any]:
 
     if not isinstance(result, dict):
         return {
-            "analysis": "解析 LLM 輸出時遇到格式問題",
+            "analysis": "LLM 輸出非標準 JSON 格式",
             "raw_response": response_text,
             "suggestions": {
                 "empathic": response_text,
@@ -100,7 +111,7 @@ def parse_json_from_llm(response_text: str) -> Dict[str, Any]:
             },
         }
 
-    # 如果 suggestions 本身是字串且內含 JSON，進行自動解包
+    # 如果 suggestions 本身是字串內含 JSON，進行自動解包
     if isinstance(result.get("suggestions"), str):
         s_str = result["suggestions"].strip()
         if s_str.startswith("{") and s_str.endswith("}"):
@@ -112,8 +123,30 @@ def parse_json_from_llm(response_text: str) -> Dict[str, Any]:
     return result
 
 
+def call_ollama_http(host: str, model: str, system_prompt: str, user_prompt: str) -> str:
+    """使用 HTTP API 呼叫 Ollama /api/chat 取得高質量專屬回應"""
+    url = f"{host}/api/chat"
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        "stream": False,
+        "options": {
+            "temperature": 0.7,
+            "top_p": 0.9,
+        },
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        res_data = json.loads(resp.read().decode("utf-8"))
+        return res_data.get("message", {}).get("content", "")
+
+
 def main():
-    parser = argparse.ArgumentParser(description="呼叫 Ollama LLM (Qwen) 生成對話改寫與修復建議")
+    parser = argparse.ArgumentParser(description="呼叫 Ollama LLM 生成專屬對話修復與改寫建議")
     parser.add_argument(
         "--input_file",
         type=str,
@@ -130,7 +163,7 @@ def main():
         "--model",
         type=str,
         default="qwen2.5:0.5b",
-        help="Ollama 模型名稱 (例如: qwen2.5:0.5b, qwen2.5:1.5b, qwen2.5:7b 等)",
+        help="Ollama 模型名稱 (例如: qwen2.5:0.5b, qwen2.5:1.5b)",
     )
     args = parser.parse_args()
 
@@ -143,45 +176,37 @@ def main():
     with open(input_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # 檢查 Ollama 服務狀態
-    server_online = check_ollama_server()
-    if not server_online:
-        print("\n⚠️ [警告] 未偵測到正在運行的 Ollama 服務 (http://localhost:11434)！")
-        print("💡 請確保您已安裝並啟動 Ollama：")
-        print("   1. 啟動 Ollama 應用程式或執行 `ollama serve`")
-        print(f"   2. 下載指定模型：`ollama pull {args.model}`")
-        print("\n🔧 目前為您展示 LLM Prompt 生成架構與備用 Mock 邏輯...")
+    # 檢查 Ollama 服務主機
+    ollama_host = check_ollama_server()
+    if not ollama_host:
+        print("\n⚠️ [警告] 未偵測到正在運行的 Ollama 服務 (http://127.0.0.1:11434)！")
+        print("💡 請確保您已啟動 Ollama 服務：")
+        print("   1. 開啟 Terminal 執行 `ollama serve` (或 brew services start ollama)")
+        print(f"   2. 下載模型：`ollama pull {args.model}`")
+        sys.exit(1)
 
-    print(f"\n🚀 [開始呼叫 Ollama LLM] 模型: {args.model} ...")
+    print(f"✅ [服務連接] 成功連線 Ollama ({ollama_host}) | 使用模型: {args.model}")
 
     updated_data = []
     for item in data:
-        print(f"\n💬 處理項目 [{item['id']}] - 風險分數: {item['predicted_risk_score_1_4']} ({item['risk_level']})")
-        prompt = build_llm_prompt(item)
+        print(f"\n💬 處理對話 [{item['id']}] - 當前訊息: 「{item['current_message']}」")
+        print(f"   風險分數: {item['predicted_risk_score_1_4']} ({item['risk_level']})")
 
-        if server_online and ollama is not None:
-            try:
-                print(f"  🤖 發送 Prompt 至 Ollama ({args.model})...")
-                response = ollama.generate(model=args.model, prompt=prompt)
-                llm_output_text = response.get("response", "")
-                parsed_json = parse_json_from_llm(llm_output_text)
+        sys_prompt = build_system_prompt()
+        user_prompt = build_user_prompt(item)
 
-                item["llm_repair_analysis"] = parsed_json.get("analysis", "")
-                item["llm_repair_suggestions"] = parsed_json.get("suggestions", {})
-                print("  ✅ 成功接收 LLM 產出的情緒分析與 3 種溫和改寫建議！")
-            except Exception as e:
-                print(f"  ⚠️ 呼叫 Ollama 時出錯: {e}")
-                item["llm_repair_analysis"] = f"無法呼叫 Ollama ({args.model})"
-                item["llm_repair_suggestions"] = {"error": str(e)}
-        else:
-            # 當 Ollama 服務未開啟時提供示意回應
-            item["llm_repair_analysis"] = f"【示範模式】此處將由 Ollama ({args.model}) 分析此處隱含的情緒與需求。"
-            item["llm_repair_suggestions"] = {
-                "empathic": f"【示範同理說法】當你說「{item['current_message']}」時，我感受到些許壓力，我們可以聊聊嗎？",
-                "softened": f"【示範軟化說法】我今天有點累，希望能被理解，而不是指責。",
-                "solution_oriented": f"【示範解決方案】我們一起找時間討論如何分配，好嗎？",
-            }
-            print("  ℹ️ 已完成提示詞構建與示範修復結構備份。")
+        try:
+            print(f"  🤖 發送專屬 Prompt 至 Ollama API...")
+            raw_response = call_ollama_http(ollama_host, args.model, sys_prompt, user_prompt)
+            parsed_json = parse_json_from_llm(raw_response)
+
+            item["llm_repair_analysis"] = parsed_json.get("analysis", raw_response)
+            item["llm_repair_suggestions"] = parsed_json.get("suggestions", {})
+            print("  ✨ 成功生成專屬情緒分析與 3 種溫和改寫建議！")
+        except Exception as e:
+            print(f"  ❌ 呼叫 Ollama 時出錯: {e}")
+            item["llm_repair_analysis"] = f"呼叫失敗: {e}"
+            item["llm_repair_suggestions"] = {"error": str(e)}
 
         updated_data.append(item)
 
@@ -190,7 +215,7 @@ def main():
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(updated_data, f, indent=2, ensure_ascii=False)
 
-    print(f"\n🎉 [流程完成] 包含 LLM 修復建議的 JSON 已儲存至 {output_path}")
+    print(f"\n🎉 [流程完成] 已將包含專屬修復建議的 JSON 儲存至 {output_path}")
 
 
 if __name__ == "__main__":

@@ -56,20 +56,20 @@ def main():
     model = AutoModelForSequenceClassification.from_pretrained(args.model_dir).to(device)
     model.eval()
 
-    # 定義測試的 3 句代表性文字 (涵蓋無衝突、溫和對話與高風險衝突)
+    # 定義測試的 3 句代表性文字 (完全去除人名，符合真實通訊軟體無標籤輸入)
     sample_dialogues = [
         {
             "id": "sample_01",
             "relationship": "couple",
-            "scenario": "Mia comes home exhausted after work while Oliver relaxes on the couch.",
+            "scenario": "One partner comes home exhausted after work while the other relaxes on the couch.",
             "history": ["Hey love. How was your day?"],
-            "current_message": "Same old, Ollie. I got you your favorite dessert on the way home!",
+            "current_message": "Same old, honey. I got you your favorite dessert on the way home!",
             "label": "無衝突 / 正向對話 (Non-conflict)",
         },
         {
             "id": "sample_02",
             "relationship": "couple",
-            "scenario": "Mia and Oliver discussing household chores and spending weekend time.",
+            "scenario": "Partners discussing household chores and spending weekend time.",
             "history": [
                 "Hey, did you remember to take out the trash?",
                 "I've been busy with work all day, I'll do it later."
@@ -80,7 +80,7 @@ def main():
         {
             "id": "sample_03",
             "relationship": "couple",
-            "scenario": "A heated argument after Oliver forgot their anniversary dinner reservation.",
+            "scenario": "A heated argument after one partner forgot their anniversary dinner reservation.",
             "history": [
                 "I waited at the restaurant for 45 minutes alone.",
                 "I told you my team meeting ran late, it's not a big deal."
